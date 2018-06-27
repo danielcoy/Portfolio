@@ -1,0 +1,10 @@
+Alien Invaders is a "retro" sci-fi arcade action shooter, in the styl of Space Invaders, created using Game Maker Studio 1.4
+
+It features 9 different enemy types with separate behaviors, 3 unique bosses, multiple power-ups, 4 level/background environments, and a total of 20 levels. Levels are very easily added, with the functionality for transistioning between levels automatically handled by the game. See the design document for more detailed information. 
+
+I created all of the in-game artwork, and was the sole programmer on the project. 
+
+Sound effects and music were obtained at Freesound.org, from various no-license/credit artists. 
+
+Daniel Coy
+daniel.coy82@gmail.com
