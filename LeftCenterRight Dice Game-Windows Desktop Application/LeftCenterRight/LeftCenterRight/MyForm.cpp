@@ -6,8 +6,7 @@ using namespace LeftCenterRight;
 
 void MyForm::InitGame()
 {
-	//System::Windows::Forms::Control^ comboBoxCtrl = f->GetControlRef("NumPlayers");
-	
+		
 	GameMessages->Text = "Game Message";
 
 	
@@ -30,6 +29,10 @@ void MyForm::InitGame()
 	NameBox->Text = "Enter Player1's Name Here";
 	NameBox->Show();
 	NameButton->Show();
+	//Hide the roll button
+	Roll->Hide();
+
+	RunGame();
 }
 
 void MyForm::RunGame()
@@ -63,7 +66,8 @@ void MyForm::RunGame()
 			int numRolls = playerArray[i]->GetNumRolls();
 
 			//Display the current player, and the number of rolls they get
-			Console::WriteLine("\n" + playerArray[i]->GetName() + " gets " + numRolls + " rolls this turn. ");
+			GameMessages->Text = playerArray[i]->GetName() + " gets " + numRolls + " rolls this turn.";
+			//Console::WriteLine("\n" + playerArray[i]->GetName() + " gets " + numRolls + " rolls this turn. ");
 
 			//For each roll
 			for (int n = 0; n < numRolls; n++)
@@ -73,22 +77,34 @@ void MyForm::RunGame()
 				//If the player gets down to 0 chips during their turn, it is over
 				if (playerArray[i]->GetNumChips() <= 0)
 				{
-					Console::WriteLine("You're out of chips. Ending turn.");
+					GameMessages->Text = "You're out of chips. Ending turn.";
+					//Console::WriteLine("You're out of chips. Ending turn.");
 					break;
 				}
 
-				Console::WriteLine("\nPress Enter to roll.");
-				Console::ReadLine();
+				GameMessages->AppendText("\r\nPress the Roll Button."); 
+				//Console::WriteLine("\nPress Enter to roll.");
+				//Console::ReadLine();
+
+				//While waiting for the roll button press, go do other application events.
+				while (!rollPressed)
+				{
+					Application::DoEvents();
+				}
+
+				//Once here, the button has been pressed, so reset the toggler
+				rollPressed = false; 
 
 				//Clear Screen and displaye scores. 
-				Console::Clear();
+				//Console::Clear();
 				DisplayScore(i);
 
 				int roll = dice.RollsDice();
 
 				//Draw the roll
-				Console::WriteLine("Roll " + (n + 1));
-				Console::WriteLine(dice.DrawDice(roll));
+				GameMessages->AppendText ("\r\nRoll " + (n + 1) + "\r\n" + dice.DrawDice(roll)); 
+				//Console::WriteLine("Roll " + (n + 1));
+				//Console::WriteLine(dice.DrawDice(roll));
 
 				//Execute a switch statement on the dice roll
 				switch (roll)
@@ -109,21 +125,33 @@ void MyForm::RunGame()
 					break;
 
 				default:
-					Console::WriteLine("Don't pass any chips.");
+					GameMessages->Text = "Don't pass any chips."; 
+					//Console::WriteLine("Don't pass any chips.");
 					break;
 				}
 			}
 
+			/*
 			Console::WriteLine("\nPress Enter to end turn.");
 			Console::ReadLine();
 			Console::Clear();
+			*/
+
+
 		}
+
+		Application::DoEvents();
 
 	}
 
 	//Game has ended, display final score
-	Console::WriteLine("Final Score:");
-	DisplayScore(-1);
+	GameMessages->Text = "Final Score:"; 
+	
+	//TODO: Add Final Score Display********************
+
+	/*
+	//Console::WriteLine("Final Score:");
+	//DisplayScore(-1);
 
 	//if the user didn't choose to quit, then find the winner
 	if (userInput != "q" && userInput != "Q")
@@ -145,6 +173,7 @@ void MyForm::RunGame()
 
 	Console::WriteLine("\nPress Enter to return to menu.");
 	Console::ReadLine();
+	*/
 }
 
 //Function to determine the player to the right and pass a chip
@@ -169,12 +198,14 @@ void MyForm::PassChipRight(int currentPlayer)
 	//else error
 	else
 	{
-		Console::WriteLine("ERROR: Player to right undetermined! Passing to player 1.");
+		GameMessages->Text = "ERROR: Player to right undetermined! Passing to player 1."; 
+		//Console::WriteLine("ERROR: Player to right undetermined! Passing to player 1.");
 		playerToRight = 0;
 	}
 
 	//Display who's passing to who
-	Console::WriteLine("Passing one chip right from " + playerArray[currentPlayer]->GetName() + " to " + playerArray[playerToRight]->GetName() + ".");
+	GameMessages->Text = "Passing one chip right from " + playerArray[currentPlayer]->GetName() + " to " + playerArray[playerToRight]->GetName() + ".";
+	//Console::WriteLine("Passing one chip right from " + playerArray[currentPlayer]->GetName() + " to " + playerArray[playerToRight]->GetName() + ".");
 
 	//Pass chip from current player to player to right
 	playerArray[currentPlayer]->PassChip();
@@ -204,12 +235,14 @@ void MyForm::PassChipLeft(int currentPlayer)
 	//else ERROR
 	else
 	{
-		Console::WriteLine("ERROR: Player to left undetermined! Passing to player 1.");
+		GameMessages->Text = "ERROR: Player to left undetermined! Passing to player 1."; 
+		//Console::WriteLine("ERROR: Player to left undetermined! Passing to player 1.");
 		playerToLeft = 0;
 	}
 
 	//Display who's passing to who
-	Console::WriteLine("Passing one chip left from " + playerArray[currentPlayer]->GetName() + " to " + playerArray[playerToLeft]->GetName() + ".");
+	GameMessages->Text = "Passing one chip left from " + playerArray[currentPlayer]->GetName() + " to " + playerArray[playerToLeft]->GetName() + "."; 
+	//Console::WriteLine("Passing one chip left from " + playerArray[currentPlayer]->GetName() + " to " + playerArray[playerToLeft]->GetName() + ".");
 
 	//Pass chip from current player to player to left
 	playerArray[currentPlayer]->PassChip();
@@ -220,7 +253,9 @@ void MyForm::PassChipLeft(int currentPlayer)
 void MyForm::PassChipCenter(int currentPlayer)
 {
 	//Display who's passing to who
-	Console::WriteLine("Passing one chip from " + playerArray[currentPlayer]->GetName() + " to the center.");
+	GameMessages->Text = "Passing one chip from " + playerArray[currentPlayer]->GetName() + " to the center."; 
+	//Console::WriteLine("Passing one chip from " + playerArray[currentPlayer]->GetName() + " to the center.");
+	
 	//Pass chip from current player to center
 	playerArray[currentPlayer]->PassChip();
 
@@ -231,15 +266,7 @@ void MyForm::PassChipCenter(int currentPlayer)
 //and count number of players with chips. If more than one, return true.
 bool MyForm::ContinueGame()
 {
-	//Get the user input
-	GetUserInput();
-
-	//if user input to quit, then return false
-	if (userInput == "q" || userInput == "Q")
-	{
-		return false;
-	}
-
+	
 	//If the user hasn't entered to quit then check if the game's over
 	int playersWithChips = 0;
 
@@ -274,13 +301,20 @@ void MyForm::GetUserInput()
 
 	//Get input
 	userInput = Console::ReadLine();
+	
 }
 
 //Function to display the current score
 void MyForm::DisplayScore(int currentPlayer)
 {
-	
-	GetControlRef(playerArray[currentPlayer]->GetTextBoxName())->Text = playerArray[currentPlayer]->GetName() + "\r\nChips: " + playerArray[currentPlayer]->GetNumChips();;
+	//Get the name of the current player
+	String^ name = playerArray[currentPlayer]->GetName();
+
+	//Get the name of the current player text box
+	String^ tbName = playerArray[currentPlayer]->GetTextBoxName();
+
+	//Set the text of the current player text box to the name and number of chips
+	GetControlRef(tbName)->Text = name + "\r\nChips: " + playerArray[currentPlayer]->GetNumChips();
 
 	/*
 	String^ turnIndicator = " ";

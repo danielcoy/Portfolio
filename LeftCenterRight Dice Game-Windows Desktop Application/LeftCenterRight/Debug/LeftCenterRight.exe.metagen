@@ -20,8 +20,4 @@ Class LeftCenterRight.MyForm: AutoLayout, AnsiClass, Class, Public, BeforeFieldI
   Methods:
     RunGame(): PrivateScope, Public, HideBySig
     InitGame(): PrivateScope, Public, HideBySig
-    SetText(String): PrivateScope, Public, HideBySig
-    SetExternalText(String): PrivateScope, Public, HideBySig
-    AddText(String): PrivateScope, Public, HideBySig
-    ClearText(): PrivateScope, Public, HideBySig
     GetControlRef(String): PrivateScope, Public, HideBySig

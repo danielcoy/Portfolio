@@ -43,6 +43,8 @@ namespace LeftCenterRight {
 				this->Player6->Hide();
 				this->NameBox->Hide();
 				this->NameButton->Hide();
+				this->Roll->Hide();
+							
 
 				//Open logo text file and dispay in the textbox
 				RulesFile logo("LCRLogo.txt");
@@ -255,6 +257,7 @@ namespace LeftCenterRight {
 				this->NameBox->Name = L"NameBox";
 				this->NameBox->Size = System::Drawing::Size(135, 20);
 				this->NameBox->TabIndex = 13;
+				this->NameBox->Click += gcnew System::EventHandler(this, &MyForm::NameBox_Click);
 				this->NameBox->TextChanged += gcnew System::EventHandler(this, &MyForm::NameBox_TextChanged);
 				// 
 				// NameButton
@@ -297,61 +300,31 @@ namespace LeftCenterRight {
 	
 		///////////////////////////////Add Functions to MyForm Class here///////////////////////////////////////////////////
 		
-			//Number of players
+			
 		private:
-			int numPlayers;
-			int name_itr;
-			bool rollIsPressed = false;
-			array<Player^>^ playerArray;
+			//Variables
+			int numPlayers;				//Number of players
+			int name_itr;				//Iterater to track entry of names
+			bool rulesToggle = true;	//Toggle for showing the rules text
+			bool rollPressed = false;	//Toggle for the roll button
+			array<Player^>^ playerArray;//Array of player objects
+			String^ userInput;			//User input string			
 			
-
-			String^ userInput;
-			//Determine the player to the left, and pass a chip
-			void PassChipLeft(int currentPlayer);
-			//Determine the player to the right and pass a chip
-			void PassChipRight(int currentPlayer);
-			//Pass a chip to the center
-			void PassChipCenter(int currentPlayer);
-			//Determine if the game should continue or should end
-			bool ContinueGame();
-			//Prompt the user and get input
-			void GetUserInput();
-			//Display the current scores to the screen
-			void DisplayScore(int currentPlayer);
-			
-
-			
+			//Methods: These are defined in MyForm.cpp
+			void PassChipLeft(int currentPlayer);	//Determine the player to the left, and pass a chip
+			void PassChipRight(int currentPlayer);	//Determine the player to the right and pass a chip
+			void PassChipCenter(int currentPlayer);	//Pass a chip to the center
+			bool ContinueGame();					//Determine if the game should continue or should end
+			void GetUserInput();					//Prompt the user and get input
+			void DisplayScore(int currentPlayer);	//Display the current scores to the screen
+						
 		public: 
-			void RunGame();
-			void InitGame();
+			//TODO: Changeto Private???
+			void RunGame();		//Run the game
+			void InitGame();	//Initialize the game
 			
-///////////////////////////////////////////////////////////////////////////////////////////
-			//Set TextBox Text Functions
-			void SetText(String^ text)
-			{
-
-				this->textBox1->Text = text;
-
-			}
-			//Set text from an external source
-			void SetExternalText(String^ text)
-			{
-				SetText(text);
-			}
-
-			//Add text, but keep what's already displayed
-			void AddText(String^ text) {
-
-				this->textBox1->AppendText(text);
-
-			}
-
-			//Clear the text
-			void ClearText()
-			{
-				this->textBox1->Clear();
-			}
-			////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////
+			//Returns a Control reference to the object named in the parameter
 
 			System::Windows::Forms::Control^ GetControlRef(String^ name)
 			{
@@ -360,27 +333,18 @@ namespace LeftCenterRight {
 				return ctrl[0];
 			}
 
-
-///////////////////////////////////////////////////////////////////Button Clicks////////////////////////////////////////////////////////////////////
-		private: 
-		
+			//////////////////Button Clicks//////////////////////////////////////////////////////////
+		private: 		
 			//PlayGame Button Click
 			System::Void PlayGame_Click(System::Object^  sender, System::EventArgs^  e) 
-			{
-			
-														
+			{					
 				try
 				{
 					//String to hold the selected item from the player # drop down
 					String^ snum = NumPlayersCombo->SelectedItem->ToString();
-					
-					//Set text to the selected item
-					//SetText(snum);
-					
+												
 					//Convert the selected item to an integer	
-					numPlayers = int::Parse(snum);
-							
-																			
+					numPlayers = int::Parse(snum);																					
 				}
 
 				//Catch all exceptions that are thrown if the number of players is not selected
@@ -393,7 +357,9 @@ namespace LeftCenterRight {
 
 				//Hide the main text box
 				this->textBox1->Hide();
-				//Hide all the player text boxes
+				//Hide the Number of players selection box
+				this->NumPlayersCombo->Hide();
+				//Hide all the player text boxes. Need to hide all currently shown boxes in case of game reset. 
 				this->Player1->Hide();
 				this->Player2->Hide();
 				this->Player3->Hide();
@@ -405,8 +371,11 @@ namespace LeftCenterRight {
 				for (int i = 1; i <= numPlayers; i++)
 				{
 					String^ name = "Player" + i;
-					ShowTextbox(name);
+					GetControlRef(name)->Show();
 				}
+
+				//Change the button text 
+				this->PlayGame->Text = "Restart";
 
 				InitGame();
 						
@@ -424,21 +393,46 @@ namespace LeftCenterRight {
 		private: 
 			System::Void Roll_Click(System::Object^  sender, System::EventArgs^  e) 
 			{
-				//toggle the roll is pressed bool
-				rollIsPressed = !rollIsPressed;
-
+				//toggle roll pressed button
+				rollPressed = true;
 				
 			}
 		//Show Rules Button
 		private: 
 			System::Void ShowRules_Click(System::Object^  sender, System::EventArgs^  e) 
 			{
-				//Clear the display
-				ClearText();
+				if (rulesToggle)
+				{
+					//Clear textbox1
+					this->textBox1->Clear();
+					//Bring to front. 
+					this->textBox1->BringToFront();
+					//Show the textbox in case it is hidden
+					this->textBox1->Show();
+					//Open the rules file and display the text
+					RulesFile rules("LCRRules.txt");
+					rules.ReadAndDisplay(this->textBox1);
 
-				//Open the rules file and display the text
-				RulesFile rules("LCRRules.txt");
-				rules.ReadAndDisplay(this->textBox1);
+					//Change button text
+					this->ShowRules->Text = "Hide Rules";
+
+					//toggle
+					rulesToggle = !rulesToggle; 
+				}
+
+				else
+				{
+					//Clear textbox1
+					this->textBox1->Clear();
+					//Hide the textbox 
+					this->textBox1->Hide();
+
+					//Change button text
+					this->ShowRules->Text = "Show Rules";
+
+					//toggle
+					rulesToggle = !rulesToggle;
+				}
 			}
 
 		//NumPlayers selected change
@@ -447,19 +441,8 @@ namespace LeftCenterRight {
 			{
 
 			}
-
-		private: 
-			void ShowTextbox(String^ name)		
-			{
-				array<System::Windows::Forms::Control^>^ ctrl = this->Controls->Find(name, true); 
-				ctrl[0]->Show();
-
-			}
-			
-
-
-
-
+		
+		//Name Button Click
 		private: System::Void NameButton_Click(System::Object^  sender, System::EventArgs^  e) 
 		{
 			//If the current name iterator value is less that the number of players
@@ -467,9 +450,7 @@ namespace LeftCenterRight {
 			{
 				//Set the name of the player to the value in the text box
 				playerArray[name_itr]->SetName(this->NameBox->Text);
-				
-			//	String^ tbn = playerArray[name_itr]->GetTextBoxName(); 
-				
+										
 				//Set the name in the appropriate player text box
 				DisplayScore(name_itr);
 
@@ -478,18 +459,27 @@ namespace LeftCenterRight {
 				this->NameBox->Text = "Enter Player" + (name_itr + 1) + "'s Name";
 			}
 
-			//When the iterater is greater than or equal to the number of players, hide the box & button
+			//When the iterater is greater than or equal to the number of players, hide the box & button, show roll btn
 			if (name_itr >= numPlayers)
 			{
 				this->NameBox->Hide();
 				this->NameButton->Hide();
+				//Show the roll button
+				this->Roll->Show();
 			}
+		}	
+
+
+		//Name box Text Changed
+		private: System::Void NameBox_TextChanged(System::Object^  sender, System::EventArgs^  e) 
+		{
 		}
-	
 
-		private: System::Void NameBox_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+		//NameBox clicked
+		private: System::Void NameBox_Click(System::Object^  sender, System::EventArgs^  e) 
+		{
+			//Select all text in box
+			this->NameBox->SelectAll();
 		}
-
-
-	};//End of Class Def
+};//End of Class Def
 }//End of Namespace
