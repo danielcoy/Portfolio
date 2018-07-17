@@ -1,23 +1,8 @@
-********************************************************************
-********************************************************************
-****								****
-****	LLLL		CCCCCCCCCCCC	RRRRRRRRRRRR		****
-****	LLLL		CCCCCCCCCCCC	RRRRRRRRRRRR		****
-****	LLLL		CCCC		RRRR	  RRRR		****
-****	LLLL		CCCC		RRRR	  RRRR		****
-****	LLLL		CCCC		RRRR	RRRR		****
-****	LLLL		CCCC		RRRRRRRRRRRR		****
-****	LLLL		CCCC		RRRR	 RRRR		****
-****	LLLL		CCCC		RRRR	  RRRR		****
-****	LLLLLLLLLLLL	CCCCCCCCCCCC	RRRR	   RRRR		****
-****	LLLLLLLLLLLL	CCCCCCCCCCCC	RRRR	    RRRR	****
-****								****
-****	    LEFT	   CENTER	     RIGHT		****	
-********************************************************************
-********************************************************************
-****								****
-****			 Daniel Coy				****
-****			 IT312 SNHU				****
-****								****
-********************************************************************
-********************************************************************
+****LEFT - CENTER - RIGHT****
+
+Created By: Daniel Coy	
+
+
+
+
+
